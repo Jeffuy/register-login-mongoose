@@ -5,8 +5,12 @@ const path = require('path');
 const flash = require('connect-flash');
 const session = require('express-session');
 const { config } = require("./config/config");
+const passport = require('passport');
 
 const app = express();
+
+// Passport Config
+require('./config/passport')(passport);
 
 
 // DB Config
@@ -33,6 +37,11 @@ app.use(session({
 	saveUninitialized: true,
 }));
 
+// Passport middleware
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 // Connect Flash
 
 app.use(flash());
@@ -42,6 +51,7 @@ app.use(flash());
 app.use((req, res, next) => {
 	res.locals.success_msg = req.flash('success_msg');
 	res.locals.error_msg = req.flash('error_msg');
+	res.locals.error = req.flash('error');
 	next();
 })
 
